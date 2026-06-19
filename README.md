@@ -116,7 +116,7 @@ Before you begin, make sure you have the following installed:
 ### Step 1 — Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Seihakz/MekongPOS.git
 cd PosSystem
 ```
 
