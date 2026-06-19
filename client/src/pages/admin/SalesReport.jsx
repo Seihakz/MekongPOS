@@ -66,10 +66,17 @@ export default function SalesReport() {
   const exportCSV = () => {
     if (!sales.length) return;
     const headers = ['ID', 'Date', 'Total', 'Payment', 'Items'];
+    const escape = (val) => {
+      const s = String(val ?? '');
+      if (s.includes(',') || s.includes('"') || s.includes('\n')) {
+        return `"${s.replace(/"/g, '""')}"`;
+      }
+      return s;
+    };
     const rows = sales.map((s) => [
       s.id, s.created_at, s.total_amount, s.payment_method, s.item_count || ''
     ]);
-    const csv = [headers, ...rows].map((r) => r.join(',')).join('\n');
+    const csv = [headers, ...rows].map((r) => r.map(escape).join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -298,8 +305,8 @@ export default function SalesReport() {
                             <tr key={idx}>
                               <td>{item.product_name || item.name}</td>
                               <td>{item.qty}</td>
-                              <td>{formatUSD(item.price || item.sell_price)}</td>
-                              <td className="fw-600">{formatUSD((item.price || item.sell_price) * item.qty)}</td>
+                              <td>{formatUSD(item.unit_price)}</td>
+                              <td className="fw-600">{formatUSD(item.total)}</td>
                             </tr>
                           ))}
                         </tbody>

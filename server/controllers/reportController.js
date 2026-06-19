@@ -114,8 +114,15 @@ const getDailySales = async (req, res) => {
 const getMonthlySales = async (req, res) => {
   try {
     const { month, year } = req.query;
-    const targetYear = year || new Date().getFullYear();
-    const targetMonth = month || (new Date().getMonth() + 1);
+    let targetYear = year || new Date().getFullYear();
+    let targetMonth = month || (new Date().getMonth() + 1);
+
+    // Handle YYYY-MM format (e.g. "2026-06") from HTML <input type="month">
+    if (month && typeof month === 'string' && month.includes('-')) {
+      const parts = month.split('-');
+      targetYear = parseInt(parts[0], 10);
+      targetMonth = parseInt(parts[1], 10);
+    }
 
     const [dailyData] = await pool.query(
       `SELECT
@@ -154,7 +161,7 @@ const getMonthlySales = async (req, res) => {
           total_tax: parseFloat(monthlySummary[0].total_tax),
           avg_sale_amount: parseFloat(monthlySummary[0].avg_sale_amount)
         },
-        daily_data: dailyData
+        daily_breakdown: dailyData
       }
     });
   } catch (error) {
@@ -165,7 +172,7 @@ const getMonthlySales = async (req, res) => {
 
 const getTopProducts = async (req, res) => {
   try {
-    const { period = '30', limit = '10', sort_by = 'qty' } = req.query;
+    const { period = '30', limit = '10', sort_by = 'revenue' } = req.query;
     let days = parseInt(period, 10);
     if (isNaN(days)) {
       if (period === 'month') days = 30;

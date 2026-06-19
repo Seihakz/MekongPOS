@@ -2,7 +2,7 @@ import React from 'react';
 
 // This component is rendered to HTML string for printing.
 // It is designed to fit an 80mm thermal printer.
-export default function Receipt({ sale }) {
+export default function Receipt({ sale, exchangeRate = 4100 }) {
   if (!sale) return null;
 
   return (
@@ -22,9 +22,9 @@ export default function Receipt({ sale }) {
       </div>
 
       <div style={{ borderBottom: '1px dashed #000', marginBottom: '10px', paddingBottom: '10px' }}>
-        <p style={{ margin: '2px 0' }}>Invoice: #{sale.invoice_no || sale.id}</p>
+        <p style={{ margin: '2px 0' }}>Invoice: #{sale.invoice_number || sale.id}</p>
         <p style={{ margin: '2px 0' }}>Date: {new Date(sale.created_at).toLocaleString()}</p>
-        <p style={{ margin: '2px 0' }}>Cashier: {sale.user_id}</p>
+        <p style={{ margin: '2px 0' }}>Cashier: {sale.cashier_name || sale.user_id}</p>
       </div>
 
       <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '10px' }}>
@@ -44,8 +44,8 @@ export default function Receipt({ sale }) {
                 </div>
                 <div style={{ fontSize: '10px', color: '#555' }}>${parseFloat(item.unit_price).toFixed(2)}</div>
               </td>
-              <td style={{ textAlign: 'center', padding: '4px 0' }}>{item.quantity}</td>
-              <td style={{ textAlign: 'right', padding: '4px 0' }}>${parseFloat(item.subtotal).toFixed(2)}</td>
+              <td style={{ textAlign: 'center', padding: '4px 0' }}>{item.qty}</td>
+              <td style={{ textAlign: 'right', padding: '4px 0' }}>${parseFloat(item.total).toFixed(2)}</td>
             </tr>
           ))}
         </tbody>
@@ -54,7 +54,7 @@ export default function Receipt({ sale }) {
       <div style={{ borderTop: '1px dashed #000', paddingTop: '10px', marginBottom: '15px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
           <span>Subtotal:</span>
-          <span>${parseFloat(sale.total_amount).toFixed(2)}</span>
+          <span>${parseFloat(sale.subtotal).toFixed(2)}</span>
         </div>
         {parseFloat(sale.discount_amount) > 0 && (
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
@@ -70,18 +70,18 @@ export default function Receipt({ sale }) {
         )}
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', fontWeight: 'bold', margin: '8px 0' }}>
           <span>Total USD:</span>
-          <span>${parseFloat(sale.final_total).toFixed(2)}</span>
+          <span>${parseFloat(sale.total_amount).toFixed(2)}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', fontWeight: 'bold' }}>
           <span>Total KHR:</span>
-          <span>៛{(parseFloat(sale.final_total) * 4100).toLocaleString()}</span>
+          <span>៛{(parseFloat(sale.total_amount) * exchangeRate).toLocaleString()}</span>
         </div>
       </div>
 
       <div style={{ borderTop: '1px dashed #000', paddingTop: '10px', marginBottom: '15px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
           <span>Paid ({sale.payment_method}):</span>
-          <span>${parseFloat(sale.amount_received || sale.final_total).toFixed(2)}</span>
+          <span>${parseFloat(sale.amount_paid || sale.total_amount).toFixed(2)}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
           <span>Change:</span>

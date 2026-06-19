@@ -93,12 +93,12 @@ export default function SalesHistory() {
                 sales.map((sale) => (
                   <tr key={sale.id}>
                     <td>
-                      <div style={{ fontWeight: 600 }}>#{sale.invoice_no || sale.id}</div>
+                      <div style={{ fontWeight: 600 }}>#{sale.invoice_number || sale.id}</div>
                     </td>
                     <td>{new Date(sale.created_at).toLocaleTimeString()}</td>
-                    <td>{sale.total_items}</td>
+                    <td>{sale.items?.length || sale.item_count || '-'}</td>
                     <td>
-                      <span className="badge badge-success">${parseFloat(sale.final_total).toFixed(2)}</span>
+                      <span className="badge badge-success">${parseFloat(sale.total_amount).toFixed(2)}</span>
                     </td>
                     <td>
                       <span className="badge badge-primary">{sale.payment_method}</span>
@@ -123,7 +123,7 @@ export default function SalesHistory() {
         <div className="modal-overlay">
           <div className="modal">
             <div className="modal-header">
-              <h2 className="modal-title">Sale Details #{selectedSale.invoice_no || selectedSale.id}</h2>
+              <h2 className="modal-title">Sale Details #{selectedSale.invoice_number || selectedSale.id}</h2>
               <button className="modal-close" onClick={() => setSelectedSale(null)}>&times;</button>
             </div>
             <div className="modal-body">
@@ -138,7 +138,7 @@ export default function SalesHistory() {
                 </div>
                 <div>
                   <p className="input-label">Cashier</p>
-                  <p>{selectedSale.user_id}</p>
+                  <p>{selectedSale.cashier_name || selectedSale.user_id}</p>
                 </div>
               </div>
               
@@ -155,9 +155,9 @@ export default function SalesHistory() {
                   {selectedSale.items?.map((item) => (
                     <tr key={item.id}>
                       <td>{item.product_name}</td>
-                      <td>{item.quantity}</td>
+                      <td>{item.qty}</td>
                       <td>${parseFloat(item.unit_price).toFixed(2)}</td>
-                      <td>${parseFloat(item.subtotal).toFixed(2)}</td>
+                      <td>${parseFloat(item.total).toFixed(2)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -179,7 +179,7 @@ export default function SalesHistory() {
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '1.125rem', marginTop: '8px', borderTop: '1px solid var(--border)', paddingTop: '8px' }}>
                     <span>Total:</span>
-                    <span className="gradient-text">${parseFloat(selectedSale.final_total).toFixed(2)}</span>
+                    <span className="gradient-text">${parseFloat(selectedSale.total_amount).toFixed(2)}</span>
                   </div>
                 </div>
               </div>

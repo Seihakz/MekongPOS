@@ -19,3 +19,16 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+
+# Claude Code
+.claude/
+
+# Playwright
+playwright-report/
+playwright.config.ts
+test-results/
+test-screenshots/
+test-pos.mjs
+tests/
+
+

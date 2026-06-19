@@ -120,7 +120,7 @@ const create = async (req, res) => {
       return res.status(400).json({ success: false, errors: errors.array() });
     }
 
-    const { barcode, name, description, category_id, cost_price, sell_price, stock_qty, min_stock } = req.body;
+    const { barcode, name, description, category_id, cost_price, sell_price, stock_qty, min_stock, unit } = req.body;
 
     let image_url = null;
     if (req.file) {
@@ -128,8 +128,8 @@ const create = async (req, res) => {
     }
 
     const [result] = await pool.query(
-      `INSERT INTO products (barcode, name, description, category_id, cost_price, sell_price, stock_qty, min_stock, image_url)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO products (barcode, name, description, category_id, cost_price, sell_price, stock_qty, min_stock, unit, image_url)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         barcode || null,
         name,
@@ -139,6 +139,7 @@ const create = async (req, res) => {
         sell_price,
         stock_qty || 0,
         min_stock || 10,
+        unit || 'pcs',
         image_url
       ]
     );
@@ -179,7 +180,7 @@ const update = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Product not found.' });
     }
 
-    const { barcode, name, description, category_id, cost_price, sell_price, stock_qty, min_stock } = req.body;
+    const { barcode, name, description, category_id, cost_price, sell_price, stock_qty, min_stock, unit } = req.body;
 
     let image_url = existing[0].image_url;
     if (req.file) {
@@ -202,6 +203,7 @@ const update = async (req, res) => {
         sell_price = ?,
         stock_qty = ?,
         min_stock = ?,
+        unit = ?,
         image_url = ?
        WHERE id = ?`,
       [
@@ -213,6 +215,7 @@ const update = async (req, res) => {
         sell_price !== undefined ? sell_price : existing[0].sell_price,
         stock_qty !== undefined ? stock_qty : existing[0].stock_qty,
         min_stock !== undefined ? min_stock : existing[0].min_stock,
+        unit !== undefined ? unit : existing[0].unit,
         image_url,
         id
       ]

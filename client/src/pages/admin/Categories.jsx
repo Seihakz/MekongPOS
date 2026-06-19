@@ -131,7 +131,7 @@ export default function Categories() {
                     <td className="fw-600">{cat.name}</td>
                     <td className="text-muted">{cat.description || '-'}</td>
                     <td>
-                      <span className="badge badge-primary">{cat.products_count ?? 0}</span>
+                      <span className="badge badge-primary">{cat.product_count ?? 0}</span>
                     </td>
                     <td>
                       <span className={`badge ${cat.is_active !== false ? 'badge-success' : 'badge-muted'}`}>

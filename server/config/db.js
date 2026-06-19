@@ -23,7 +23,8 @@ const testConnection = async () => {
     return true;
   } catch (error) {
     console.error('❌ Database connection failed:', error.message);
-    return false;
+    console.error('   Server cannot start without database. Exiting.');
+    process.exit(1);
   }
 };
 

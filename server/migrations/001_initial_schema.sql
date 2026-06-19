@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS users (
 -- Categories
 CREATE TABLE IF NOT EXISTS categories (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(100) NOT NULL,
+  name VARCHAR(100) UNIQUE NOT NULL,
   description TEXT,
   is_active BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS products (
   sell_price DECIMAL(12,2) NOT NULL,
   stock_qty INT NOT NULL DEFAULT 0,
   min_stock INT DEFAULT 10,
+  unit VARCHAR(20) DEFAULT 'pcs',
   image_url VARCHAR(500),
   is_active BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -54,8 +55,8 @@ CREATE TABLE IF NOT EXISTS products (
 CREATE TABLE IF NOT EXISTS customers (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
-  phone VARCHAR(20),
-  email VARCHAR(100),
+  phone VARCHAR(20) UNIQUE,
+  email VARCHAR(100) UNIQUE,
   address TEXT,
   points INT DEFAULT 0,
   is_active BOOLEAN DEFAULT TRUE,
@@ -78,9 +79,10 @@ CREATE TABLE IF NOT EXISTS sales (
   total_amount DECIMAL(12,2) NOT NULL,
   amount_paid DECIMAL(12,2) NOT NULL,
   change_amount DECIMAL(12,2) DEFAULT 0,
-  payment_method ENUM('cash', 'card', 'other') DEFAULT 'cash',
+  payment_method ENUM('cash', 'card', 'qr', 'other') DEFAULT 'cash',
   note TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL
 );
@@ -96,6 +98,7 @@ CREATE TABLE IF NOT EXISTS sale_items (
   unit_price DECIMAL(12,2) NOT NULL,
   discount DECIMAL(12,2) DEFAULT 0,
   total DECIMAL(12,2) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (sale_id) REFERENCES sales(id) ON DELETE CASCADE,
   FOREIGN KEY (product_id) REFERENCES products(id)
 );
@@ -110,9 +113,19 @@ CREATE TABLE IF NOT EXISTS stock_movements (
   note TEXT,
   user_id INT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (product_id) REFERENCES products(id),
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+-- Indexes for foreign key performance
+CREATE INDEX idx_products_category_id ON products(category_id);
+CREATE INDEX idx_sale_items_sale_id ON sale_items(sale_id);
+CREATE INDEX idx_sale_items_product_id ON sale_items(product_id);
+CREATE INDEX idx_sales_user_id ON sales(user_id);
+CREATE INDEX idx_sales_customer_id ON sales(customer_id);
+CREATE INDEX idx_stock_movements_product_id ON stock_movements(product_id);
+CREATE INDEX idx_stock_movements_user_id ON stock_movements(user_id);
 
 -- Insert default settings
 INSERT IGNORE INTO settings (setting_key, setting_value, description) VALUES
@@ -124,3 +137,7 @@ INSERT IGNORE INTO settings (setting_key, setting_value, description) VALUES
 ('receipt_footer', 'Thank you for shopping with us!', 'Receipt footer message'),
 ('currency_primary', 'USD', 'Primary currency'),
 ('currency_secondary', 'KHR', 'Secondary currency');
+
+-- Migration: Add unit column to products for existing databases
+-- Run manually if database already exists:
+-- ALTER TABLE products ADD COLUMN unit VARCHAR(20) DEFAULT 'pcs' AFTER min_stock;

@@ -13,8 +13,8 @@ export default function Settings() {
     shop_phone: '',
     tax_rate: 0,
     exchange_rate: 0,
-    primary_currency: 'USD',
-    secondary_currency: 'KHR',
+    currency_primary: 'USD',
+    currency_secondary: 'KHR',
     receipt_footer: '',
   });
 
@@ -32,8 +32,8 @@ export default function Settings() {
         shop_phone: settingsMap.shop_phone || '',
         tax_rate: parseFloat(settingsMap.tax_rate) || 0,
         exchange_rate: parseFloat(settingsMap.exchange_rate) || 0,
-        primary_currency: settingsMap.primary_currency || 'USD',
-        secondary_currency: settingsMap.secondary_currency || 'KHR',
+        currency_primary: settingsMap.currency_primary || 'USD',
+        currency_secondary: settingsMap.currency_secondary || 'KHR',
         receipt_footer: settingsMap.receipt_footer || '',
       });
     } catch (error) {
@@ -126,8 +126,8 @@ export default function Settings() {
                 <label className="input-label">{t('primaryCurrency')}</label>
                 <select
                   className="input-field"
-                  value={formData.primary_currency}
-                  onChange={(e) => setFormData({ ...formData, primary_currency: e.target.value })}
+                  value={formData.currency_primary}
+                  onChange={(e) => setFormData({ ...formData, currency_primary: e.target.value })}
                 >
                   <option value="USD">USD ($)</option>
                   <option value="KHR">KHR (៛)</option>
@@ -137,8 +137,8 @@ export default function Settings() {
                 <label className="input-label">{t('secondaryCurrency')}</label>
                 <select
                   className="input-field"
-                  value={formData.secondary_currency}
-                  onChange={(e) => setFormData({ ...formData, secondary_currency: e.target.value })}
+                  value={formData.currency_secondary}
+                  onChange={(e) => setFormData({ ...formData, currency_secondary: e.target.value })}
                 >
                   <option value="KHR">KHR (៛)</option>
                   <option value="USD">USD ($)</option>

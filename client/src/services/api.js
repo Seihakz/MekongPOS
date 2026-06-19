@@ -82,7 +82,7 @@ export const saleAPI = {
   create: (data) => api.post('/sales', data),
   getAll: (params) => api.get('/sales', { params }),
   getById: (id) => api.get(`/sales/${id}`),
-  getToday: () => api.get('/sales', { params: { start_date: new Date().toISOString().split('T')[0], end_date: new Date().toISOString().split('T')[0] } }),
+  getToday: () => api.get('/sales/today'),
 };
 
 // ───────── Stock API ─────────

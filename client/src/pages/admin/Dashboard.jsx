@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
-import { reportAPI, saleAPI } from '../../services/api';
+import { reportAPI, saleAPI, settingsAPI } from '../../services/api';
 import {
   FiShoppingBag, FiDollarSign, FiPackage, FiAlertTriangle,
   FiTrendingUp, FiClock
@@ -18,9 +18,14 @@ export default function Dashboard() {
   const [recentSales, setRecentSales] = useState([]);
   const [topProducts, setTopProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [exchangeRate, setExchangeRate] = useState(4100);
 
   useEffect(() => {
     fetchData();
+    settingsAPI.getAll().then((res) => {
+      const s = res.data.data || {};
+      if (s.exchange_rate) setExchangeRate(parseFloat(s.exchange_rate) || 4100);
+    }).catch(() => {});
   }, []);
 
   const fetchData = async () => {
@@ -53,7 +58,7 @@ export default function Dashboard() {
   };
 
   const formatUSD = (val) => `$${parseFloat(val || 0).toFixed(2)}`;
-  const formatKHR = (val) => `៛${Math.round(parseFloat(val || 0) * 4100).toLocaleString()}`;
+  const formatKHR = (val) => `៛${Math.round(parseFloat(val || 0) * exchangeRate).toLocaleString()}`;
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (!active || !payload?.length) return null;

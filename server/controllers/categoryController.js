@@ -100,6 +100,9 @@ const update = async (req, res) => {
     });
   } catch (error) {
     console.error('Update category error:', error);
+    if (error.code === 'ER_DUP_ENTRY') {
+      return res.status(400).json({ success: false, message: 'Category name already exists.' });
+    }
     res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 };

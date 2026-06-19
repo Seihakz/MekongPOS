@@ -5,11 +5,8 @@ import { productAPI, categoryAPI } from '../../services/api';
 import ProductGrid from '../../components/pos/ProductGrid';
 import Cart from '../../components/pos/Cart';
 import PaymentModal from '../../components/pos/PaymentModal';
-import Receipt from '../../components/pos/Receipt';
-import { printReceiptHtml } from '../../utils/printReceipt';
 import { useCart } from '../../context/CartContext';
 import { useLanguage } from '../../context/LanguageContext';
-import { createRoot } from 'react-dom/client';
 
 export default function POS() {
   const { t } = useLanguage();
@@ -19,18 +16,18 @@ export default function POS() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [loading, setLoading] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+
   const searchInputRef = useRef(null);
   const { clearCart, items, addItem } = useCart();
 
   useEffect(() => {
     fetchCategories();
-    fetchProducts();
   }, []);
 
   useEffect(() => {
     fetchProducts();
-  }, [search, selectedCategory]);
+  }, [search, selectedCategory, categories]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -95,26 +92,18 @@ export default function POS() {
       const res = await productAPI.getByBarcode(search);
       if (res.data && res.data.data) {
         addItem(res.data.data);
-        setSearch(''); // Clear search after successful barcode scan
+        setSearch('');
       } else {
         toast.error('Product not found');
       }
     } catch (error) {
-      // Fallback to normal search filter if it's not a barcode
-      fetchProducts();
+      if (error.response && error.response.status === 404) {
+        // Not a barcode — fall back to normal search
+        fetchProducts();
+      } else {
+        toast.error('Failed to look up product');
+      }
     }
-  };
-
-  const handlePaymentSuccess = (saleData) => {
-    // Print receipt automatically
-    const printContainer = document.createElement('div');
-    const root = createRoot(printContainer);
-    root.render(<Receipt sale={saleData} />);
-    
-    setTimeout(() => {
-      printReceiptHtml(printContainer.innerHTML);
-      root.unmount();
-    }, 500);
   };
 
   return (
@@ -122,16 +111,40 @@ export default function POS() {
       {/* Left Panel: Products */}
       <div style={{ flex: '60%', display: 'flex', flexDirection: 'column', borderRight: '1px solid var(--border)' }}>
         <div style={{ padding: '16px', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border)' }}>
-          <form onSubmit={handleBarcodeSubmit} className="input-group" style={{ flexDirection: 'row', alignItems: 'center', background: 'var(--bg-input)', padding: '0 12px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)', height: '48px' }}>
-            <FiSearch color="var(--text-muted)" size={20} />
+          <form
+            onSubmit={handleBarcodeSubmit}
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: '10px',
+              background: 'var(--bg-input)',
+              padding: '0 14px',
+              borderRadius: 'var(--radius-sm)',
+              border: `1px solid ${isSearchFocused ? 'var(--accent-primary)' : 'var(--border)'}`,
+              boxShadow: isSearchFocused ? '0 0 0 3px rgba(99, 102, 241, 0.15)' : 'none',
+              height: '48px',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            <FiSearch color={isSearchFocused ? 'var(--accent-primary)' : 'var(--text-muted)'} size={20} style={{ flexShrink: 0, transition: 'color 0.2s ease' }} />
             <input
               ref={searchInputRef}
               type="text"
-              placeholder={`${t('scanBarcode')} (F5)`}
+              placeholder={t('scanBarcode')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="input-field"
-              style={{ border: 'none', background: 'transparent', fontSize: '1rem', height: '100%' }}
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setIsSearchFocused(false)}
+              style={{
+                flex: 1,
+                border: 'none',
+                outline: 'none',
+                background: 'transparent',
+                fontSize: '1rem',
+                height: '100%',
+                color: 'var(--text-primary)',
+              }}
               autoFocus
             />
           </form>
@@ -171,23 +184,22 @@ export default function POS() {
         <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
           <Cart />
         </div>
-        
+
         <div style={{ padding: '16px', borderTop: '1px solid var(--border)', background: 'var(--bg-card)', flexShrink: 0 }}>
-          <button 
-            className="btn btn-primary btn-lg" 
+          <button
+            className="btn btn-primary btn-lg"
             style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', fontSize: '1.25rem', padding: '16px' }}
             disabled={items.length === 0}
             onClick={() => setIsPaymentModalOpen(true)}
           >
-            <FiCreditCard size={24} /> {t('payNow')} (F2)
+            <FiCreditCard size={24} /> {t('payNow')}
           </button>
         </div>
       </div>
 
-      <PaymentModal 
-        isOpen={isPaymentModalOpen} 
-        onClose={() => setIsPaymentModalOpen(false)} 
-        onSuccess={handlePaymentSuccess}
+      <PaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
       />
     </div>
   );

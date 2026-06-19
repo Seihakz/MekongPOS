@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 
+const JWT_SECRET = process.env.JWT_SECRET || 'mekongpos_dev_secret_change_in_production';
+
 const verifyToken = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -13,7 +15,7 @@ const verifyToken = (req, res, next) => {
 
     const token = authHeader.split(' ')[1];
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded;
     next();
   } catch (error) {
@@ -50,4 +52,4 @@ const requireRole = (...roles) => {
   };
 };
 
-module.exports = { verifyToken, requireRole };
+module.exports = { verifyToken, requireRole, JWT_SECRET };

@@ -85,6 +85,9 @@ const create = async (req, res) => {
     });
   } catch (error) {
     console.error('Create customer error:', error);
+    if (error.code === 'ER_DUP_ENTRY') {
+      return res.status(400).json({ success: false, message: 'Phone or email already exists.' });
+    }
     res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 };
@@ -124,6 +127,9 @@ const update = async (req, res) => {
     });
   } catch (error) {
     console.error('Update customer error:', error);
+    if (error.code === 'ER_DUP_ENTRY') {
+      return res.status(400).json({ success: false, message: 'Phone or email already exists.' });
+    }
     res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 };

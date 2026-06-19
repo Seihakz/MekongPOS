@@ -173,7 +173,7 @@ const create = async (req, res) => {
       connection.release();
       return res.status(400).json({
         success: false,
-        message: `Insufficient payment. Total: $${totalAmount.toFixed(2)}, Paid: $${paidAmount.toFixed(2)}`
+        message: `Insufficient payment. Total: $${totalAmount.toFixed(2)}, Paid: $${isNaN(paidAmount) ? '0.00' : paidAmount.toFixed(2)}`
       });
     }
 
