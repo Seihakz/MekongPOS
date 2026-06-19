@@ -111,7 +111,55 @@ Before you begin, make sure you have the following installed:
 
 ---
 
-## Installation & Setup
+## Quick Start with Docker (Recommended)
+
+> **What is Docker?** Docker packages the entire app — frontend, backend, and database — into containers that run identically on any computer. No need to install Node.js, MySQL, or configure anything manually. Your friend just installs Docker and runs one command.
+
+### Prerequisites
+
+Install **Docker Desktop**:
+- **Windows/Mac:** Download from [docker.com](https://www.docker.com/products/docker-desktop/) and install
+- **Linux:** Follow instructions at [docs.docker.com](https://docs.docker.com/engine/install/)
+
+### Run the Entire System with One Command
+
+```bash
+git clone https://github.com/Seihakz/MekongPOS.git
+cd PosSystem
+docker compose up --build
+```
+
+That's it. The system will be available at:
+
+| Service | URL |
+|---|---|
+| **Frontend (App)** | http://localhost:3000 |
+| **Backend API** | http://localhost:5000 |
+| **MySQL** | localhost:3307 |
+
+**Login:** `admin` / `admin123`
+
+> First startup takes 1-2 minutes (building images + initializing database). Subsequent starts are much faster.
+
+### Useful Docker Commands
+
+```bash
+# Stop everything
+docker compose down
+
+# Stop and delete all data (fresh start)
+docker compose down -v
+
+# View logs
+docker compose logs -f
+
+# Rebuild after code changes
+docker compose up --build
+```
+
+---
+
+## Manual Installation & Setup
 
 ### Step 1 — Clone the Repository
 

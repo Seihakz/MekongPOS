@@ -1,0 +1,76 @@
+# ============================================================
+# MekongPOS — Docker Compose
+# ============================================================
+# This file starts 3 containers together:
+#   1. MySQL database
+#   2. Node.js backend API
+#   3. React frontend (served by nginx)
+#
+# Your friend just needs Docker installed, then runs:
+#   docker compose up --build
+# And the whole system is ready at http://localhost:3000
+# ============================================================
+
+services:
+  # ---------- Database ----------
+  db:
+    image: mysql:8.0
+    container_name: mekongpos_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword123
+      MYSQL_DATABASE: pos_system
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      # Auto-run the schema + seed when the database starts fresh
+      - ./server/migrations/001_initial_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ./server/seeds/001_seed_data.sql:/docker-entrypoint-initdb.d/02_seed_data.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ---------- Backend API ----------
+  server:
+    build: ./server
+    container_name: mekongpos_server
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PORT: 5000
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: rootpassword123
+      DB_NAME: pos_system
+      JWT_SECRET: mekongpos_jwt_secret_key_2024
+      JWT_EXPIRES_IN: 24h
+      DEFAULT_TAX_RATE: 10
+      DEFAULT_EXCHANGE_RATE: 4100
+      SHOP_NAME: MekongPOS
+      SHOP_ADDRESS: Phnom Penh, Cambodia
+      SHOP_PHONE: "+855 12 345 678"
+    ports:
+      - "5000:5000"
+    volumes:
+      - uploads_data:/app/uploads
+
+  # ---------- Frontend ----------
+  client:
+    build: ./client
+    container_name: mekongpos_client
+    restart: unless-stopped
+    depends_on:
+      - server
+    ports:
+      - "3000:80"
+
+# Named volumes for persistent data
+volumes:
+  db_data:
+  uploads_data:
