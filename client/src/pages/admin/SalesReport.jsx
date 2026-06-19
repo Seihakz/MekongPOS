@@ -149,21 +149,21 @@ export default function SalesReport() {
                   <div className="stat-card">
                     <div className="stat-card-icon indigo"><FiShoppingBag /></div>
                     <div className="stat-card-info">
-                      <div className="stat-card-value">{dailyData?.total_sales || sales.length || 0}</div>
+                      <div className="stat-card-value">{dailyData?.summary?.total_sales ?? sales.length ?? 0}</div>
                       <div className="stat-card-label">{t('totalSales')}</div>
                     </div>
                   </div>
                   <div className="stat-card">
                     <div className="stat-card-icon green"><FiDollarSign /></div>
                     <div className="stat-card-info">
-                      <div className="stat-card-value">{formatUSD(dailyData?.total_revenue || sales.reduce((s,x) => s + parseFloat(x.total_amount || 0), 0))}</div>
+                      <div className="stat-card-value">{formatUSD(dailyData?.summary?.total_revenue ?? sales.reduce((s,x) => s + parseFloat(x.total_amount || 0), 0))}</div>
                       <div className="stat-card-label">{t('totalRevenue')}</div>
                     </div>
                   </div>
                   <div className="stat-card">
                     <div className="stat-card-icon amber"><FiTrendingUp /></div>
                     <div className="stat-card-info">
-                      <div className="stat-card-value">{formatUSD(dailyData?.average_sale || 0)}</div>
+                      <div className="stat-card-value">{formatUSD(dailyData?.summary?.average_sale ?? (sales.length ? sales.reduce((s,x) => s + parseFloat(x.total_amount || 0), 0) / sales.length : 0))}</div>
                       <div className="stat-card-label">{t('averageSale')}</div>
                     </div>
                   </div>
@@ -214,14 +214,14 @@ export default function SalesReport() {
                   <div className="stat-card">
                     <div className="stat-card-icon indigo"><FiShoppingBag /></div>
                     <div className="stat-card-info">
-                      <div className="stat-card-value">{monthlyData?.total_sales || 0}</div>
+                      <div className="stat-card-value">{monthlyData?.summary?.total_sales || 0}</div>
                       <div className="stat-card-label">{t('totalSales')}</div>
                     </div>
                   </div>
                   <div className="stat-card">
                     <div className="stat-card-icon green"><FiDollarSign /></div>
                     <div className="stat-card-info">
-                      <div className="stat-card-value">{formatUSD(monthlyData?.total_revenue)}</div>
+                      <div className="stat-card-value">{formatUSD(monthlyData?.summary?.total_revenue)}</div>
                       <div className="stat-card-label">{t('totalRevenue')}</div>
                     </div>
                   </div>
@@ -244,7 +244,7 @@ export default function SalesReport() {
                         <XAxis dataKey="date" stroke="#64748b" fontSize={12} />
                         <YAxis stroke="#64748b" fontSize={12} />
                         <Tooltip content={<CustomTooltip />} />
-                        <Area type="monotone" dataKey="revenue" stroke="#8b5cf6" fill="url(#rGrad)" strokeWidth={2} />
+                        <Area type="monotone" dataKey="total_revenue" stroke="#8b5cf6" fill="url(#rGrad)" strokeWidth={2} />
                       </AreaChart>
                     </ResponsiveContainer>
                   </div>
@@ -258,7 +258,7 @@ export default function SalesReport() {
                     <ResponsiveContainer width="100%" height={250}>
                       <BarChart data={topProducts}>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                        <XAxis dataKey="name" stroke="#64748b" fontSize={12} />
+                        <XAxis dataKey="product_name" stroke="#64748b" fontSize={12} />
                         <YAxis stroke="#64748b" fontSize={12} />
                         <Tooltip content={<CustomTooltip />} />
                         <Bar dataKey="total_revenue" fill="#ec4899" radius={[4,4,0,0]} />

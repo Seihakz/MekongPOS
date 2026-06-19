@@ -167,7 +167,7 @@ export default function SalesHistory() {
                 <div style={{ width: '200px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span className="text-muted">Subtotal:</span>
-                    <span>${parseFloat(selectedSale.total_amount).toFixed(2)}</span>
+                    <span>${parseFloat(selectedSale.subtotal || selectedSale.total_amount).toFixed(2)}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span className="text-muted">Discount:</span>

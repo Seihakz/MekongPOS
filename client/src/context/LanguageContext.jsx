@@ -236,6 +236,8 @@ const translations = {
     receiptSettings: 'Receipt Settings',
     receiptFooter: 'Receipt Footer Message',
     settingsSaved: 'Settings saved successfully',
+    shopLogo: 'Shop Logo',
+    uploadLogo: 'Upload Logo',
     currency: 'Currency',
     language: 'Language',
     english: 'English',
@@ -250,6 +252,7 @@ const translations = {
     topSellingProducts: 'Top Selling Products',
     salesOverview: 'Sales Overview',
     monthlySales: 'Monthly Sales',
+    sold: 'sold',
 
     // Confirmation
     deleteConfirmTitle: 'Delete Confirmation',
@@ -449,7 +452,7 @@ const translations = {
     exportCSV: 'នាំចេញ CSV',
 
     // Users
-    fullName: 'ឈ্মោះពេញ',
+    fullName: 'ឈ្មោះពេញ',
     role: 'តួនាទី',
     admin: 'អ្នកគ្រប់គ្រង',
     addUser: 'បន្ថែមអ្នកប្រើ',
@@ -492,6 +495,8 @@ const translations = {
     receiptSettings: 'ការកំណត់បង្កាន់ដៃ',
     receiptFooter: 'សារនៅខាងក្រោមបង្កាន់ដៃ',
     settingsSaved: 'រក្សាទុកការកំណត់ដោយជោគជ័យ',
+    shopLogo: 'ឡូហ្គោហាង',
+    uploadLogo: 'បង្ហោះឡូហ្គោ',
     currency: 'រូបិយប័ណ្ណ',
     language: 'ភាសា',
     english: 'English',
@@ -506,6 +511,7 @@ const translations = {
     topSellingProducts: 'ផលិតផលលក់ដាច់បំផុត',
     salesOverview: 'ទិដ្ឋភាពទូទៅនៃការលក់',
     monthlySales: 'ការលក់ប្រចាំខែ',
+    sold: 'លក់បាន',
 
     // Confirmation
     deleteConfirmTitle: 'បញ្ជាក់ការលុប',

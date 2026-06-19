@@ -314,7 +314,8 @@ const getAll = async (req, res) => {
     const total = countResult[0].total;
 
     const [sales] = await pool.query(
-      `SELECT s.*, u.full_name AS cashier_name, cu.name AS customer_name
+      `SELECT s.*, u.full_name AS cashier_name, cu.name AS customer_name,
+              (SELECT COUNT(*) FROM sale_items WHERE sale_id = s.id) AS item_count
        FROM sales s
        LEFT JOIN users u ON s.user_id = u.id
        LEFT JOIN customers cu ON s.customer_id = cu.id

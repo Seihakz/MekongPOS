@@ -1,27 +1,19 @@
-import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import { createContext, useContext, useState, useMemo, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { useLanguage } from './LanguageContext';
-import { settingsAPI } from '../services/api';
+import { useSettings } from './SettingsContext';
 
 const CartContext = createContext(null);
 
 export function CartProvider({ children }) {
   const { t } = useLanguage();
+  const { settings } = useSettings();
   const [items, setItems] = useState([]);
   const [discountType, setDiscountType] = useState('percentage');
   const [discountValue, setDiscountValue] = useState(0);
-  const [taxRate, setTaxRate] = useState(10);
-  const [exchangeRate, setExchangeRate] = useState(4100);
 
-  useEffect(() => {
-    settingsAPI.getAll()
-      .then((res) => {
-        const s = res.data.data || {};
-        if (s.tax_rate) setTaxRate(parseFloat(s.tax_rate) || 10);
-        if (s.exchange_rate) setExchangeRate(parseFloat(s.exchange_rate) || 4100);
-      })
-      .catch(() => {});
-  }, []);
+  const taxRate = settings.tax_rate || 10;
+  const exchangeRate = settings.exchange_rate || 4100;
 
   const addItem = useCallback((product) => {
     setItems((prev) => {

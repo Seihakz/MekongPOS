@@ -108,8 +108,58 @@ const update = async (req, res) => {
   }
 };
 
+const uploadLogo = async (req, res) => {
+  let connection;
+
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No image file provided.' });
+    }
+
+    const logoUrl = `/uploads/settings/${req.file.filename}`;
+
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    // Insert or update logo_url
+    const [existing] = await connection.query(
+      'SELECT id FROM settings WHERE setting_key = ?',
+      ['logo_url']
+    );
+
+    if (existing.length > 0) {
+      await connection.query(
+        'UPDATE settings SET setting_value = ? WHERE setting_key = ?',
+        [logoUrl, 'logo_url']
+      );
+    } else {
+      await connection.query(
+        'INSERT INTO settings (setting_key, setting_value, description) VALUES (?, ?, ?)',
+        ['logo_url', logoUrl, 'Shop logo image URL']
+      );
+    }
+
+    await connection.commit();
+    connection.release();
+
+    res.json({
+      success: true,
+      message: 'Logo uploaded successfully.',
+      data: { logo_url: logoUrl }
+    });
+  } catch (error) {
+    if (connection) {
+      await connection.rollback().catch(() => {});
+      connection.release();
+    }
+    console.error('Upload logo error:', error);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
+  }
+};
+
 module.exports = {
   getAll,
   getByKey,
-  update
+  update,
+  uploadLogo
 };

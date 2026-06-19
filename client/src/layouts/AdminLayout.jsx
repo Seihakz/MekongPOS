@@ -1,6 +1,7 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useSettings } from '../context/SettingsContext';
 import {
   FiGrid, FiBox, FiTag, FiLayers, FiBarChart2,
   FiUsers, FiUserCheck, FiSettings, FiLogOut, FiGlobe,
@@ -10,6 +11,7 @@ import {
 export default function AdminLayout() {
   const { user, logout } = useAuth();
   const { t, language, toggleLanguage } = useLanguage();
+  const { settings } = useSettings();
   const location = useLocation();
 
   const navItems = [
@@ -35,8 +37,12 @@ export default function AdminLayout() {
       <aside className="sidebar">
         <div className="sidebar-header">
           <div className="sidebar-logo">
-            <div className="sidebar-logo-icon">M</div>
-            <span className="sidebar-logo-text gradient-text">MekongPOS</span>
+            {settings.logo_url ? (
+              <img src={settings.logo_url} alt="logo" style={{ width: '36px', height: '36px', borderRadius: '8px', objectFit: 'contain' }} />
+            ) : (
+              <div className="sidebar-logo-icon">{(settings.shop_name || 'M')[0]}</div>
+            )}
+            <span className="sidebar-logo-text gradient-text">{settings.shop_name || 'MekongPOS'}</span>
           </div>
         </div>
 

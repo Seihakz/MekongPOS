@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
-import { reportAPI, saleAPI, settingsAPI } from '../../services/api';
+import { useSettings } from '../../context/SettingsContext';
+import { reportAPI, saleAPI } from '../../services/api';
 import {
   FiShoppingBag, FiDollarSign, FiPackage, FiAlertTriangle,
   FiTrendingUp, FiClock
@@ -18,14 +19,11 @@ export default function Dashboard() {
   const [recentSales, setRecentSales] = useState([]);
   const [topProducts, setTopProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [exchangeRate, setExchangeRate] = useState(4100);
+  const { settings } = useSettings();
+  const exchangeRate = settings.exchange_rate || 4100;
 
   useEffect(() => {
     fetchData();
-    settingsAPI.getAll().then((res) => {
-      const s = res.data.data || {};
-      if (s.exchange_rate) setExchangeRate(parseFloat(s.exchange_rate) || 4100);
-    }).catch(() => {});
   }, []);
 
   const fetchData = async () => {
@@ -162,7 +160,7 @@ export default function Dashboard() {
               <Tooltip content={<CustomTooltip />} />
               <Area
                 type="monotone"
-                dataKey="revenue"
+                dataKey="total_revenue"
                 stroke="#6366f1"
                 strokeWidth={2}
                 fill="url(#salesGradient)"
@@ -226,19 +224,30 @@ export default function Dashboard() {
             </div>
             {topProducts.length > 0 ? (
               <div style={{ padding: 20 }}>
-                <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={topProducts} layout="vertical">
+                <ResponsiveContainer width="100%" height={220}>
+                  <BarChart data={topProducts} layout="vertical" margin={{ left: 10, right: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                    <XAxis type="number" stroke="#64748b" fontSize={12} />
+                    <XAxis type="number" stroke="#64748b" fontSize={12} tickLine={false} allowDecimals={false} />
                     <YAxis
-                      dataKey="name"
+                      dataKey="product_name"
                       type="category"
                       stroke="#64748b"
                       fontSize={12}
-                      width={100}
+                      width={130}
                       tickLine={false}
                     />
-                    <Tooltip content={<CustomTooltip />} />
+                    <Tooltip
+                      content={({ active, payload }) => {
+                        if (!active || !payload?.length) return null;
+                        return (
+                          <div className="custom-tooltip">
+                            <p className="label">{payload[0].payload.product_name}</p>
+                            <p className="value">{payload[0].value} {t('sold')}</p>
+                          </div>
+                        );
+                      }}
+                      cursor={{ fill: 'rgba(139, 92, 246, 0.1)' }}
+                    />
                     <Bar dataKey="total_qty" fill="#8b5cf6" radius={[0, 4, 4, 0]} />
                   </BarChart>
                 </ResponsiveContainer>

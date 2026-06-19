@@ -8,6 +8,7 @@ import './index.css';
 // Providers
 import { AuthProvider } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
+import { SettingsProvider } from './context/SettingsContext';
 import { CartProvider } from './context/CartContext';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -15,17 +16,19 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <AuthProvider>
         <LanguageProvider>
-          <CartProvider>
-            <App />
-            <Toaster position="top-right" toastOptions={{ 
-              style: {
-                background: 'var(--bg-card)',
-                color: 'var(--text-primary)',
-                border: '1px solid var(--border)',
-                backdropFilter: 'blur(12px)',
-              }
-            }} />
-          </CartProvider>
+          <SettingsProvider>
+            <CartProvider>
+              <App />
+              <Toaster position="top-right" toastOptions={{
+                style: {
+                  background: 'var(--bg-card)',
+                  color: 'var(--text-primary)',
+                  border: '1px solid var(--border)',
+                  backdropFilter: 'blur(12px)',
+                }
+              }} />
+            </CartProvider>
+          </SettingsProvider>
         </LanguageProvider>
       </AuthProvider>
     </BrowserRouter>

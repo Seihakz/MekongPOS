@@ -69,11 +69,11 @@ const create = async (req, res) => {
       return res.status(400).json({ success: false, errors: errors.array() });
     }
 
-    const { name, phone, email, address } = req.body;
+    const { name, phone, email, address, points } = req.body;
 
     const [result] = await pool.query(
-      'INSERT INTO customers (name, phone, email, address) VALUES (?, ?, ?, ?)',
-      [name, phone || null, email || null, address || null]
+      'INSERT INTO customers (name, phone, email, address, points) VALUES (?, ?, ?, ?, ?)',
+      [name, phone || null, email || null, address || null, points || 0]
     );
 
     const [newCustomer] = await pool.query('SELECT * FROM customers WHERE id = ?', [result.insertId]);
@@ -100,7 +100,7 @@ const update = async (req, res) => {
     }
 
     const { id } = req.params;
-    const { name, phone, email, address } = req.body;
+    const { name, phone, email, address, points } = req.body;
 
     const [existing] = await pool.query('SELECT * FROM customers WHERE id = ? AND is_active = TRUE', [id]);
     if (existing.length === 0) {
@@ -108,12 +108,13 @@ const update = async (req, res) => {
     }
 
     await pool.query(
-      'UPDATE customers SET name = ?, phone = ?, email = ?, address = ? WHERE id = ?',
+      'UPDATE customers SET name = ?, phone = ?, email = ?, address = ?, points = ? WHERE id = ?',
       [
         name || existing[0].name,
         phone !== undefined ? phone : existing[0].phone,
         email !== undefined ? email : existing[0].email,
         address !== undefined ? address : existing[0].address,
+        points !== undefined ? points : existing[0].points,
         id
       ]
     );

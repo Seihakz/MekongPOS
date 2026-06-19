@@ -3,6 +3,7 @@ import { FiDollarSign, FiCheckCircle, FiCreditCard, FiSmartphone, FiX, FiPrinter
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { useSettings } from '../../context/SettingsContext';
 import { saleAPI } from '../../services/api';
 import { printReceiptHtml } from '../../utils/printReceipt';
 import toast from 'react-hot-toast';
@@ -10,6 +11,7 @@ import toast from 'react-hot-toast';
 export default function PaymentModal({ isOpen, onClose, onSuccess }) {
   const { t, language } = useLanguage();
   const { user } = useAuth();
+  const { settings } = useSettings();
   const { total, totalKHR, exchangeRate, items, subtotal, discountType, discountValue, discountAmount, taxAmount, clearCart, setDiscount } = useCart();
   const [localDiscountType, setLocalDiscountType] = useState('percentage');
   const [localDiscountValue, setLocalDiscountValue] = useState('');
@@ -114,9 +116,10 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }) {
     return `
       <div style="width:300px;padding:10px;margin:0 auto;font-family:'Courier New',monospace;font-size:12px;color:#000;background:#fff">
         <div style="text-align:center;margin-bottom:12px">
-          <h2 style="margin:0;font-size:18px;letter-spacing:2px">MEKONGPOS</h2>
-          <p style="margin:4px 0;font-size:11px">Phnom Penh, Cambodia</p>
-          <p style="margin:4px 0;font-size:11px">Tel: +855 12 345 678</p>
+          ${settings.logo_url ? `<img src="${settings.logo_url}" alt="logo" style="max-height:60px;margin-bottom:5px"/>` : ''}
+          <h2 style="margin:0;font-size:18px;letter-spacing:2px">${(settings.shop_name || 'MEKONGPOS').toUpperCase()}</h2>
+          ${settings.shop_address ? `<p style="margin:4px 0;font-size:11px">${settings.shop_address}</p>` : ''}
+          ${settings.shop_phone ? `<p style="margin:4px 0;font-size:11px">Tel: ${settings.shop_phone}</p>` : ''}
         </div>
         <div style="text-align:center;border-top:1px dashed #000;border-bottom:1px dashed #000;padding:8px 0;margin-bottom:8px">
           <strong>សន្និកវិក្កយបត្រ / RECEIPT</strong>
@@ -137,7 +140,7 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }) {
           <tbody>${itemsHtml}</tbody>
         </table>
         <div style="border-top:1px dashed #000;padding-top:8px;margin-top:4px;font-size:11px">
-          <div style="display:flex;justify-content:space-between"><span>Subtotal:</span><span>$${parseFloat(sale.total_amount).toFixed(2)}</span></div>
+          <div style="display:flex;justify-content:space-between"><span>Subtotal:</span><span>$${parseFloat(sale.subtotal || sale.total_amount).toFixed(2)}</span></div>
           ${parseFloat(sale.discount_amount) > 0 ? `<div style="display:flex;justify-content:space-between"><span>Discount:</span><span>-$${parseFloat(sale.discount_amount).toFixed(2)}</span></div>` : ''}
           ${parseFloat(sale.tax_amount) > 0 ? `<div style="display:flex;justify-content:space-between"><span>Tax:</span><span>$${parseFloat(sale.tax_amount).toFixed(2)}</span></div>` : ''}
           <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:bold;margin:6px 0"><span>Total USD:</span><span>$${parseFloat(sale.total_amount).toFixed(2)}</span></div>
@@ -148,9 +151,8 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }) {
           <div style="display:flex;justify-content:space-between"><span>Change:</span><span>$${parseFloat(sale.change_amount || 0).toFixed(2)}</span></div>
         </div>
         <div style="text-align:center;margin-top:16px;border-top:1px dashed #000;padding-top:8px">
-          <p style="margin:0;font-size:11px">Thank you for your purchase!</p>
-          <p style="margin:2px 0;font-size:11px">សូមអរគុណសម្រាប់ការទិញ!</p>
-          <p style="margin:4px 0;font-size:10px;color:#888">Powered by MekongPOS</p>
+          ${settings.receipt_footer ? `<p style="margin:0;font-size:11px">${settings.receipt_footer}</p>` : ''}
+          <p style="margin:4px 0;font-size:10px;color:#888">Powered by ${settings.shop_name || 'MekongPOS'}</p>
         </div>
       </div>
     `;
@@ -189,9 +191,12 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }) {
             }}>
               {/* Shop Header */}
               <div style={{ textAlign: 'center', marginBottom: '12px' }}>
-                <h3 style={{ margin: '0 0 4px', fontSize: '16px', letterSpacing: '2px', fontWeight: 800 }}>MEKONGPOS</h3>
-                <p style={{ margin: '2px 0', fontSize: '10px', color: '#555' }}>Phnom Penh, Cambodia</p>
-                <p style={{ margin: '2px 0', fontSize: '10px', color: '#555' }}>Tel: +855 12 345 678</p>
+                {settings.logo_url && (
+                  <img src={settings.logo_url} alt="logo" style={{ maxHeight: '50px', marginBottom: '4px' }} />
+                )}
+                <h3 style={{ margin: '0 0 4px', fontSize: '16px', letterSpacing: '2px', fontWeight: 800 }}>{(settings.shop_name || 'MEKONGPOS').toUpperCase()}</h3>
+                {settings.shop_address && <p style={{ margin: '2px 0', fontSize: '10px', color: '#555' }}>{settings.shop_address}</p>}
+                {settings.shop_phone && <p style={{ margin: '2px 0', fontSize: '10px', color: '#555' }}>Tel: {settings.shop_phone}</p>}
               </div>
 
               <div style={{ borderTop: '1px dashed #ccc', borderBottom: '1px dashed #ccc', textAlign: 'center', padding: '6px 0', margin: '8px 0', fontWeight: 700, fontSize: '11px' }}>
@@ -239,7 +244,7 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }) {
               {/* Totals */}
               <div style={{ borderTop: '1px dashed #ccc', paddingTop: '8px', marginTop: '4px', fontSize: '11px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}>
-                  <span>Subtotal:</span><span>${parseFloat(sale.total_amount).toFixed(2)}</span>
+                  <span>Subtotal:</span><span>${parseFloat(sale.subtotal || sale.total_amount).toFixed(2)}</span>
                 </div>
                 {parseFloat(sale.discount_amount) > 0 && (
                   <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}>
@@ -271,8 +276,7 @@ export default function PaymentModal({ isOpen, onClose, onSuccess }) {
 
               {/* Footer */}
               <div style={{ textAlign: 'center', marginTop: '12px', borderTop: '1px dashed #ccc', paddingTop: '8px' }}>
-                <p style={{ margin: '0', fontSize: '10px' }}>Thank you for your purchase!</p>
-                <p style={{ margin: '2px 0', fontSize: '10px' }}>សូមអរគុណសម្រាប់ការទិញ!</p>
+                {settings.receipt_footer && <p style={{ margin: '0', fontSize: '10px' }}>{settings.receipt_footer}</p>}
               </div>
             </div>
           </div>

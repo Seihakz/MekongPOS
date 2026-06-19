@@ -136,8 +136,13 @@ INSERT IGNORE INTO settings (setting_key, setting_value, description) VALUES
 ('shop_phone', '+855 12 345 678', 'Shop phone number'),
 ('receipt_footer', 'Thank you for shopping with us!', 'Receipt footer message'),
 ('currency_primary', 'USD', 'Primary currency'),
-('currency_secondary', 'KHR', 'Secondary currency');
+('currency_secondary', 'KHR', 'Secondary currency'),
+('logo_url', '', 'Shop logo image URL');
 
 -- Migration: Add unit column to products for existing databases
 -- Run manually if database already exists:
 -- ALTER TABLE products ADD COLUMN unit VARCHAR(20) DEFAULT 'pcs' AFTER min_stock;
+
+-- Migration: Add logo_url setting for existing databases
+-- Run manually if database already exists:
+-- INSERT IGNORE INTO settings (setting_key, setting_value, description) VALUES ('logo_url', '', 'Shop logo image URL');

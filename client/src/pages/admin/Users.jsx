@@ -154,7 +154,7 @@ export default function Users() {
                     </td>
                     <td>
                       <button className="btn btn-ghost btn-sm" onClick={() => toggleActive(u)}>
-                        {u.is_active !== false ? (
+                        {u.is_active ? (
                           <><FiToggleRight className="text-success" /> <span className="text-success fs-sm">{t('active')}</span></>
                         ) : (
                           <><FiToggleLeft className="text-muted" /> <span className="text-muted fs-sm">{t('inactive')}</span></>

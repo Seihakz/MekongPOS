@@ -1,9 +1,18 @@
 import React from 'react';
+import { useSettings } from '../../context/SettingsContext';
 
 // This component is rendered to HTML string for printing.
 // It is designed to fit an 80mm thermal printer.
-export default function Receipt({ sale, exchangeRate = 4100 }) {
+export default function Receipt({ sale }) {
+  const { settings } = useSettings();
+  const exchangeRate = settings.exchange_rate || 4100;
+
   if (!sale) return null;
+
+  const shopName = settings.shop_name || 'MekongPOS';
+  const shopAddress = settings.shop_address || '';
+  const shopPhone = settings.shop_phone || '';
+  const footer = settings.receipt_footer || '';
 
   return (
     <div style={{
@@ -16,9 +25,12 @@ export default function Receipt({ sale, exchangeRate = 4100 }) {
       background: '#fff',
     }}>
       <div style={{ textAlign: 'center', marginBottom: '15px' }}>
-        <h2 style={{ margin: '0 0 5px 0', fontSize: '18px' }}>MekongPOS</h2>
-        <p style={{ margin: '0' }}>123 Main Street, Phnom Penh</p>
-        <p style={{ margin: '0' }}>Tel: +855 12 345 678</p>
+        {settings.logo_url && (
+          <img src={settings.logo_url} alt="logo" style={{ maxHeight: '60px', marginBottom: '5px' }} />
+        )}
+        <h2 style={{ margin: '0 0 5px 0', fontSize: '18px' }}>{shopName}</h2>
+        {shopAddress && <p style={{ margin: '0' }}>{shopAddress}</p>}
+        {shopPhone && <p style={{ margin: '0' }}>Tel: {shopPhone}</p>}
       </div>
 
       <div style={{ borderBottom: '1px dashed #000', marginBottom: '10px', paddingBottom: '10px' }}>
@@ -89,9 +101,13 @@ export default function Receipt({ sale, exchangeRate = 4100 }) {
         </div>
       </div>
 
-      <div style={{ textAlign: 'center', marginTop: '20px' }}>
-        <p style={{ margin: '0' }}>Thank you for shopping with us!</p>
-        <p style={{ margin: '0', fontSize: '10px' }}>Powered by MekongPOS</p>
+      {footer && (
+        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+          <p style={{ margin: '0' }}>{footer}</p>
+        </div>
+      )}
+      <div style={{ textAlign: 'center', marginTop: footer ? '8px' : '20px' }}>
+        <p style={{ margin: '0', fontSize: '10px' }}>Powered by {shopName}</p>
       </div>
     </div>
   );

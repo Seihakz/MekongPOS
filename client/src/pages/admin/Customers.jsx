@@ -101,18 +101,7 @@ export default function Customers() {
           </div>
           <h1 className="page-title">{t('customers')}</h1>
         </div>
-        <div className="page-header-right" style={{ display: 'flex', gap: '16px' }}>
-          <div className="input-group" style={{ flexDirection: 'row', alignItems: 'center', background: 'var(--bg-input)', padding: '0 12px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)' }}>
-            <FiSearch color="var(--text-muted)" />
-            <input
-              type="text"
-              placeholder={t('searchCustomers')}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="input-field"
-              style={{ border: 'none', background: 'transparent' }}
-            />
-          </div>
+        <div className="page-header-right">
           <button className="btn btn-primary" onClick={() => openModal()}>
             <FiPlus /> {t('addCustomer')}
           </button>
@@ -120,6 +109,19 @@ export default function Customers() {
       </div>
 
       <div className="page-content animate-fade-in">
+        <div className="filter-bar">
+          <div className="search-input-wrapper">
+            <FiSearch />
+            <input
+              type="text"
+              placeholder={t('searchCustomers')}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="input-field"
+            />
+          </div>
+        </div>
+
         <div className="table-container glass-card">
           <table className="table">
             <thead>

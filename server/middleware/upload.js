@@ -2,15 +2,22 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Ensure upload directory exists
-const uploadDir = path.join(__dirname, '..', 'uploads', 'products');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+// Ensure upload directories exist
+const productsDir = path.join(__dirname, '..', 'uploads', 'products');
+const settingsDir = path.join(__dirname, '..', 'uploads', 'settings');
+[productsDir, settingsDir].forEach((dir) => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+});
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, uploadDir);
+    // Route to settings dir for logo uploads
+    if (req.route && req.route.path === '/logo') {
+      return cb(null, settingsDir);
+    }
+    cb(null, productsDir);
   },
   filename: (req, file, cb) => {
     const safeName = path.basename(file.originalname).replace(/\s+/g, '_');

@@ -56,7 +56,8 @@ const getDailySales = async (req, res) => {
          COUNT(*) AS total_sales,
          COALESCE(SUM(total_amount), 0) AS total_revenue,
          COALESCE(SUM(discount_amount), 0) AS total_discount,
-         COALESCE(SUM(tax_amount), 0) AS total_tax
+         COALESCE(SUM(tax_amount), 0) AS total_tax,
+         COALESCE(AVG(total_amount), 0) AS average_sale
        FROM sales
        WHERE DATE(created_at) = ?`,
       [targetDate]
@@ -99,6 +100,7 @@ const getDailySales = async (req, res) => {
           total_revenue: parseFloat(summary[0].total_revenue),
           total_discount: parseFloat(summary[0].total_discount),
           total_tax: parseFloat(summary[0].total_tax),
+          average_sale: parseFloat(summary[0].average_sale),
           total_items: itemsSold[0].total_items
         },
         top_products: topProducts,
