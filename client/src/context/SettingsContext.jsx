@@ -21,9 +21,12 @@ export function SettingsProvider({ children }) {
 
   const refresh = useCallback(async () => {
     try {
-      const res = await settingsAPI.getAll();
+      const token = localStorage.getItem('mekongpos_token');
+      const res = token
+        ? await settingsAPI.getAll()
+        : await settingsAPI.getPublic();
       const s = res.data.data || {};
-      setSettings({
+      const newSettings = {
         shop_name: s.shop_name || defaultSettings.shop_name,
         shop_address: s.shop_address || '',
         shop_phone: s.shop_phone || '',
@@ -33,7 +36,21 @@ export function SettingsProvider({ children }) {
         currency_secondary: s.currency_secondary || 'KHR',
         receipt_footer: s.receipt_footer || '',
         logo_url: s.logo_url || '',
-      });
+      };
+      setSettings(newSettings);
+
+      // Update favicon when logo changes
+      if (newSettings.logo_url) {
+        const favicon = document.querySelector("link[rel*='icon']") || document.querySelector('link[rel="icon"]');
+        if (favicon) {
+          favicon.href = newSettings.logo_url;
+        }
+      }
+
+      // Update document title with shop name
+      if (newSettings.shop_name && newSettings.shop_name !== 'MekongPOS') {
+        document.title = `${newSettings.shop_name} - Point of Sale System`;
+      }
     } catch {
       // keep defaults on error
     } finally {

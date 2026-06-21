@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FiSettings, FiSave, FiUpload, FiImage } from 'react-icons/fi';
+import { FiSettings, FiSave, FiUpload, FiImage, FiTrash2 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { settingsAPI } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
@@ -10,6 +10,7 @@ export default function Settings() {
   const { settings: contextSettings, refresh } = useSettings();
   const [loading, setLoading] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [removingLogo, setRemovingLogo] = useState(false);
   const [logoUrl, setLogoUrl] = useState('');
   const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
@@ -83,6 +84,20 @@ export default function Settings() {
     }
   };
 
+  const handleRemoveLogo = async () => {
+    setRemovingLogo(true);
+    try {
+      await settingsAPI.removeLogo();
+      setLogoUrl('');
+      await refresh();
+      toast.success('Logo removed successfully');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to remove logo');
+    } finally {
+      setRemovingLogo(false);
+    }
+  };
+
   return (
     <>
       <div className="page-header">
@@ -121,16 +136,30 @@ export default function Settings() {
                   onChange={handleLogoChange}
                   style={{ display: 'none' }}
                 />
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={uploadingLogo}
-                  style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
-                >
-                  <FiUpload size={16} />
-                  {uploadingLogo ? t('loading') : t('uploadLogo')}
-                </button>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadingLogo || removingLogo}
+                    style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                  >
+                    <FiUpload size={16} />
+                    {uploadingLogo ? t('loading') : t('uploadLogo')}
+                  </button>
+                  {logoUrl && (
+                    <button
+                      type="button"
+                      className="btn btn-danger"
+                      onClick={handleRemoveLogo}
+                      disabled={uploadingLogo || removingLogo}
+                      style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                    >
+                      <FiTrash2 size={16} />
+                      {removingLogo ? t('loading') : t('removeLogo')}
+                    </button>
+                  )}
+                </div>
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
                   JPEG, PNG, GIF, or WEBP. Max 5MB.
                 </p>

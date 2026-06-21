@@ -125,10 +125,12 @@ export const customerAPI = {
 // ───────── Settings API ─────────
 export const settingsAPI = {
   getAll: () => api.get('/settings'),
+  getPublic: () => api.get('/settings/public'),
   update: (data) => api.put('/settings', data),
   uploadLogo: (formData) => api.post('/settings/logo', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   }),
+  removeLogo: () => api.delete('/settings/logo'),
 };
 
 export default api;

@@ -157,9 +157,60 @@ const uploadLogo = async (req, res) => {
   }
 };
 
+const deleteLogo = async (req, res) => {
+  let connection;
+
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    // Get current logo so we can delete the file
+    const [rows] = await connection.query(
+      'SELECT setting_value FROM settings WHERE setting_key = ?',
+      ['logo_url']
+    );
+
+    const oldLogo = rows.length > 0 ? rows[0].setting_value : '';
+
+    if (rows.length > 0) {
+      await connection.query(
+        'UPDATE settings SET setting_value = ? WHERE setting_key = ?',
+        ['', 'logo_url']
+      );
+    }
+
+    await connection.commit();
+    connection.release();
+
+    // Attempt to delete the old file from disk (non-fatal if it fails)
+    if (oldLogo) {
+      const fs = require('fs');
+      const path = require('path');
+      const filePath = path.join(__dirname, '..', oldLogo);
+      fs.unlink(filePath, (err) => {
+        if (err) console.warn('Could not delete old logo file:', err.message);
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Logo removed successfully.',
+      data: { logo_url: '' }
+    });
+  } catch (error) {
+    if (connection) {
+      await connection.rollback().catch(() => {});
+      connection.release();
+    }
+    console.error('Delete logo error:', error);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
+  }
+};
+
 module.exports = {
   getAll,
   getByKey,
   update,
-  uploadLogo
+  uploadLogo,
+  deleteLogo
 };

@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useSettings } from '../context/SettingsContext';
 import { FiUser, FiLock, FiAlertCircle, FiLogIn, FiGlobe } from 'react-icons/fi';
 
 export default function Login() {
   const { login } = useAuth();
   const { t, language, toggleLanguage } = useLanguage();
+  const { settings } = useSettings();
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -36,8 +38,16 @@ export default function Login() {
     <div className="login-page">
       <div className="login-card">
         <div className="login-logo">
-          <div className="login-logo-icon">M</div>
-          <h1 className="login-title gradient-text">MekongPOS</h1>
+          {settings.logo_url ? (
+            <img
+              src={settings.logo_url}
+              alt={settings.shop_name || 'Logo'}
+              style={{ maxHeight: '80px', maxWidth: '200px', objectFit: 'contain', display: 'block', margin: '0 auto 12px auto' }}
+            />
+          ) : (
+            <div className="login-logo-icon">M</div>
+          )}
+          <h1 className="login-title gradient-text">{settings.shop_name || 'MekongPOS'}</h1>
           <p className={`login-subtitle ${language === 'km' ? 'km' : ''}`}>{t('loginSubtitle')}</p>
         </div>
 

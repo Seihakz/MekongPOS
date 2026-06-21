@@ -14,6 +14,13 @@ export default function Receipt({ sale }) {
   const shopPhone = settings.shop_phone || '';
   const footer = settings.receipt_footer || '';
 
+  // Convert relative logo URL to absolute so it loads in the print window
+  const logoUrl = settings.logo_url
+    ? (settings.logo_url.startsWith('http')
+        ? settings.logo_url
+        : window.location.origin + settings.logo_url)
+    : '';
+
   return (
     <div style={{
       width: '300px', // Roughly 80mm
@@ -25,8 +32,12 @@ export default function Receipt({ sale }) {
       background: '#fff',
     }}>
       <div style={{ textAlign: 'center', marginBottom: '15px' }}>
-        {settings.logo_url && (
-          <img src={settings.logo_url} alt="logo" style={{ maxHeight: '60px', marginBottom: '5px' }} />
+        {logoUrl && (
+          <img
+            src={logoUrl}
+            alt="logo"
+            style={{ maxWidth: '150px', maxHeight: '80px', objectFit: 'contain', display: 'block', margin: '0 auto 8px auto' }}
+          />
         )}
         <h2 style={{ margin: '0 0 5px 0', fontSize: '18px' }}>{shopName}</h2>
         {shopAddress && <p style={{ margin: '0' }}>{shopAddress}</p>}
