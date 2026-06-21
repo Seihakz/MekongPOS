@@ -96,6 +96,12 @@ const translations = {
     minStock: 'Min Stock',
     generateBarcode: 'Generate',
     allCategories: 'All Categories',
+    productImage: 'Product Image',
+    uploadImage: 'Upload Image',
+    removeImage: 'Remove Image',
+    noImage: 'No Image',
+    imageTooLarge: 'Image must be under 5MB',
+    imageInvalidType: 'Only JPEG, PNG, GIF, or WEBP images allowed',
 
     // Categories
     categoryName: 'Category Name',
@@ -355,6 +361,12 @@ const translations = {
     minStock: 'ស្តុកអប្បបរមា',
     generateBarcode: 'បង្កើត',
     allCategories: 'ប្រភេទទាំងអស់',
+    productImage: 'រូបភាពផលិតផល',
+    uploadImage: 'បង្ហោះរូបភាព',
+    removeImage: 'លុបរូបភាព',
+    noImage: 'មិនមានរូបភាព',
+    imageTooLarge: 'រូបភាពត្រូវតែតិចជាង 5MB',
+    imageInvalidType: 'អនុញ្ញាតតែ JPEG, PNG, GIF, ឬ WEBP ប៉ុណ្ណោះ',
 
     // Categories
     categoryName: 'ឈ្មោះប្រភេទ',
