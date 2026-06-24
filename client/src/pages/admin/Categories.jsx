@@ -167,8 +167,8 @@ export default function Categories() {
 
       {/* Add/Edit Modal */}
       {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-overlay">
+          <div className="modal">
             <div className="modal-header">
               <h3 className={`modal-title ${language === 'km' ? 'km' : ''}`}>
                 {editItem ? t('editCategory') : t('addCategory')}

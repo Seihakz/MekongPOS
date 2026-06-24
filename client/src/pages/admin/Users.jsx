@@ -182,8 +182,8 @@ export default function Users() {
 
       {/* Add/Edit Modal */}
       {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-overlay">
+          <div className="modal">
             <div className="modal-header">
               <h3 className="modal-title">{editItem ? t('editUser') : t('addUser')}</h3>
               <button className="modal-close" onClick={() => setShowModal(false)}><FiX /></button>
@@ -229,8 +229,8 @@ export default function Users() {
 
       {/* Reset Password Modal */}
       {resetPwModal && (
-        <div className="modal-overlay" onClick={() => setResetPwModal(null)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-overlay">
+          <div className="modal">
             <div className="modal-header">
               <h3 className="modal-title">{t('resetPassword')} — {resetPwModal.full_name}</h3>
               <button className="modal-close" onClick={() => setResetPwModal(null)}><FiX /></button>

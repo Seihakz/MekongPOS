@@ -292,8 +292,8 @@ export default function Products() {
 
       {/* Add/Edit Modal */}
       {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal modal-lg" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-overlay">
+          <div className="modal modal-lg">
             <div className="modal-header">
               <h3 className={`modal-title ${language === 'km' ? 'km' : ''}`}>
                 {editItem ? t('editProduct') : t('addProduct')}
