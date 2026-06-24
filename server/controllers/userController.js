@@ -173,6 +173,28 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (parseInt(id, 10) === req.user.id) {
+      return res.status(400).json({ success: false, message: 'Cannot delete your own account.' });
+    }
+
+    const [existing] = await pool.query('SELECT id FROM users WHERE id = ?', [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+
+    await pool.query('DELETE FROM users WHERE id = ?', [id]);
+
+    res.json({ success: true, message: 'User deleted successfully.' });
+  } catch (error) {
+    console.error('Delete user error:', error);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
+  }
+};
+
 const validateCreateUser = [
   body('username').trim().notEmpty().withMessage('Username is required.')
     .isLength({ min: 3 }).withMessage('Username must be at least 3 characters.'),
@@ -198,6 +220,7 @@ module.exports = {
   create,
   update,
   toggleActive,
+  deleteUser,
   resetPassword,
   validateCreateUser,
   validateUpdateUser,

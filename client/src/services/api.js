@@ -110,6 +110,7 @@ export const userAPI = {
   create: (data) => api.post('/users', data),
   update: (id, data) => api.put(`/users/${id}`, data),
   toggleActive: (id) => api.patch(`/users/${id}/toggle-active`),
+  remove: (id) => api.delete(`/users/${id}`),
   resetPassword: (id, data) => api.put(`/users/${id}/reset-password`, data),
 };
 

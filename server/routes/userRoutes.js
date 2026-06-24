@@ -7,6 +7,7 @@ const {
   create,
   update,
   toggleActive,
+  deleteUser,
   resetPassword,
   validateCreateUser,
   validateUpdateUser,
@@ -21,6 +22,7 @@ router.get('/:id', getById);
 router.post('/', validateCreateUser, create);
 router.put('/:id', validateUpdateUser, update);
 router.patch('/:id/toggle-active', toggleActive);
+router.delete('/:id', deleteUser);
 router.put('/:id/reset-password', validateResetPassword, resetPassword);
 
 module.exports = router;

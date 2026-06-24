@@ -70,7 +70,7 @@ export default function Users() {
   const handleDelete = async () => {
     if (!deleteItem) return;
     try {
-      await userAPI.toggleActive(deleteItem.id);
+      await userAPI.remove(deleteItem.id);
       toast.success(t('userDeleted'));
       setDeleteItem(null);
       fetchUsers();
